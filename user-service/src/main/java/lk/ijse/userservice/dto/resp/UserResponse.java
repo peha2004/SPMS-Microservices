@@ -10,10 +10,9 @@ import lk.ijse.userservice.entity.Role;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
+public class UserResponse {
     private Long id;
     private String name;
     private String email;
     private Role role;
-    private String accessToken;
 }
