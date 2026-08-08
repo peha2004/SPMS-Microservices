@@ -3,24 +3,25 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: user-service
-            uri: lb://user-service
-            predicates:
-              - Path=/api/users/**
-          - id: parking-service
-            uri: lb://parking-service
-            predicates:
-              - Path=/api/parking/**
-          - id: vehicle-service
-            uri: lb://vehicle-service
-            predicates:
-              - Path=/api/vehicles/**
-          - id: payment-service
-            uri: lb://payment-service
-            predicates:
-              - Path=/api/payments/**
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/users/**
+            - id: parking-service
+              uri: lb://parking-service
+              predicates:
+                - Path=/api/parking/**
+            - id: vehicle-service
+              uri: lb://vehicle-service
+              predicates:
+                - Path=/api/vehicles/**
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/payments/**
 
 server:
   port: 8080
@@ -29,15 +30,3 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: gateway,health
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
