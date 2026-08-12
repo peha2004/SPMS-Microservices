@@ -11,13 +11,14 @@
         <module name="config-server" />
         <module name="service-registry" />
       </profile>
-      <profile name="Annotation profile for parking-service" enabled="true">
+      <profile name="Annotation profile for vehicle-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
         </processorPath>
+        <module name="vehicle-service" />
         <module name="parking-service" />
         <module name="user-service" />
       </profile>
@@ -30,6 +31,7 @@
       <module name="parking-service" options="-parameters" />
       <module name="service-registry" options="-parameters" />
       <module name="user-service" options="-parameters" />
+      <module name="vehicle-service" options="-parameters" />
     </option>
   </component>
 </project>
