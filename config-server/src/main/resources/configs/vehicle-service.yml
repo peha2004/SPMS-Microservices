@@ -1,0 +1,8 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/spms_vehicle_db?createDatabaseIfNotExist=true
+    username: root
+    password: ${DB_PASSWORD}
