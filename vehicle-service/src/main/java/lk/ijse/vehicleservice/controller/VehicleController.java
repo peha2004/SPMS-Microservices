@@ -21,7 +21,17 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<VehicleResponse>> saveVehicle(@RequestBody VehicleSaveRequest request) {
+    public ResponseEntity<ApiResponse<VehicleResponse>> saveVehicle(
+            @RequestBody VehicleSaveRequest request,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        if (!"DRIVER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "Only drivers can register vehicles", null));
+        }
+
+        request.setOwnerId(userId);
         VehicleResponse response = vehicleService.saveVehicle(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(201, "Vehicle registered successfully", response));
@@ -43,12 +53,31 @@ public class VehicleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(@PathVariable Long id, @RequestBody VehicleUpdateRequest request) {
+    public ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(
+            @PathVariable Long id,
+            @RequestBody VehicleUpdateRequest request,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        VehicleResponse existing = vehicleService.getVehicle(id);
+        if (!existing.getOwnerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "You can only update your own vehicles", null));
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(200, "Vehicle updated successfully", vehicleService.updateVehicle(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteVehicle(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteVehicle(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        VehicleResponse existing = vehicleService.getVehicle(id);
+        if (!existing.getOwnerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "You can only delete your own vehicles", null));
+        }
+
         vehicleService.deleteVehicle(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Vehicle deleted successfully", null));
     }
