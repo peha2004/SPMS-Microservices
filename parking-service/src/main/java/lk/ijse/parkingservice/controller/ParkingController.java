@@ -21,7 +21,17 @@ public class ParkingController {
     private final ParkingService parkingService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ParkingResponse>> saveParking(@RequestBody ParkingSaveRequest request) {
+    public ResponseEntity<ApiResponse<ParkingResponse>> saveParking(
+            @RequestBody ParkingSaveRequest request,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "Only parking owners can create parking spaces", null));
+        }
+
+        request.setOwnerId(userId);
         ParkingResponse response = parkingService.saveParking(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(201, "Parking created successfully", response));
@@ -38,12 +48,43 @@ public class ParkingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ParkingResponse>> updateParking(@PathVariable Long id, @RequestBody ParkingUpdateRequest request) {
+    public ResponseEntity<ApiResponse<ParkingResponse>> updateParking(
+            @PathVariable Long id,
+            @RequestBody ParkingUpdateRequest request,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "Only parking owners can update parking spaces", null));
+        }
+
+        ParkingResponse existing = parkingService.getParking(id);
+        if (!existing.getOwnerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "You can only update your own parking spaces", null));
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(200, "Parking updated successfully", parkingService.updateParking(id, request)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteParking(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteParking(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Role", required = false) String role,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+
+        if (!"OWNER".equals(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "Only parking owners can delete parking spaces", null));
+        }
+
+        ParkingResponse existing = parkingService.getParking(id);
+        if (!existing.getOwnerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ApiResponse<>(403, "You can only delete your own parking spaces", null));
+        }
+
         parkingService.deleteParking(id);
         return ResponseEntity.ok(new ApiResponse<>(200, "Parking deleted successfully", null));
     }
