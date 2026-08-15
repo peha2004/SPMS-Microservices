@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(request.getRole());
         User saved = userRepository.save(user);
 
-        String token = jwtUtil.generateToken(saved.getEmail(), saved.getRole().name());
+        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole().name());
         return AuthResponse.builder()
                 .id(saved.getId())
                 .name(saved.getName())
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         return AuthResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
