@@ -1,0 +1,1289 @@
+{
+  "info": {
+    "_postman_id": "a7cbb386-0257-4163-9fe5-f7c825174e1d",
+    "name": "SPMS Microservices",
+    "description": "StartFragmentSmart Parking Management System. Run requests in order: 1, 2, 3, 4. Run the Delete requests last in each folder.EndFragment",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49847055",
+    "_collection_link": "https://go.postman.co/collection/49847055-a7cbb386-0257-4163-9fe5-f7c825174e1d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. User Service",
+      "item": [
+        {
+          "name": "1.1 Register DRIVER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.collectionVariables.set('driver_token', data.accessToken);",
+                  "    pm.collectionVariables.set('driver_id', data.id);",
+                  "    console.log('driver_id set to: ' + data.id);",
+                  "} else {",
+                  "    console.log('Register DRIVER did not return 201 - check response before continuing');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Driver Test\",\n  \"email\": \"driver_{{$timestamp}}@spms.com\",\n  \"password\": \"test1234\",\n  \"role\": \"DRIVER\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/users/register",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1.2 Register OWNER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.collectionVariables.set('owner_token', data.accessToken);",
+                  "    pm.collectionVariables.set('owner_id', data.id);",
+                  "    console.log('owner_id set to: ' + data.id);",
+                  "} else {",
+                  "    console.log('Register OWNER did not return 201 - check response before continuing');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Owner Test\",\n  \"email\": \"owner_{{$timestamp}}@spms.com\",\n  \"password\": \"test1234\",\n  \"role\": \"OWNER\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/users/register",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1.3 Register Duplicate Email (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Driver Test\",\n  \"email\": \"duplicate-test@spms.com\",\n  \"password\": \"test1234\",\n  \"role\": \"DRIVER\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/users/register",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1.4 Login - Wrong Password (expect 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nobody@spms.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/users/login",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1.5 Get User Profile By ID (DRIVER)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/users/{{driver_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "{{driver_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "1.6 Request Without Token (expect 401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Parking Service",
+      "item": [
+        {
+          "name": "2.1 Create Parking as OWNER - SUCCESS",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('parking_id', pm.response.json().data.id);",
+                  "    console.log('parking_id set to: ' + pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parkingName\": \"City Center Parking\",\n  \"city\": \"Colombo\",\n  \"zone\": \"Zone A\",\n  \"location\": \"Colombo 03\",\n  \"address\": \"123 Galle Road, Colombo 03\",\n  \"latitude\": 6.9147,\n  \"longitude\": 79.8560,\n  \"totalSlots\": 50,\n  \"hourlyRate\": 150.0,\n  \"ownerId\": 1,\n  \"description\": \"Multi-level covered parking\",\n  \"contactNumber\": \"0771234567\",\n  \"openingTime\": \"06:00:00\",\n  \"closingTime\": \"22:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/parking",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.2 Create Parking as DRIVER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parkingName\": \"Unauthorized Attempt\",\n  \"city\": \"Colombo\",\n  \"zone\": \"Zone B\",\n  \"location\": \"Colombo 04\",\n  \"address\": \"456 Test Road\",\n  \"latitude\": 6.9,\n  \"longitude\": 79.85,\n  \"totalSlots\": 10,\n  \"hourlyRate\": 100.0,\n  \"ownerId\": 1,\n  \"contactNumber\": \"0770000000\",\n  \"openingTime\": \"06:00:00\",\n  \"closingTime\": \"22:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/parking",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.3 Get Parking By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.4 Get All Parking",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.5 Filter Parking By Location",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/search?location=Colombo",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "Colombo"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.6 Reserve Parking",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}/reserve",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.7 Release Parking",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}/release",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}",
+                "release"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.8 Update Parking as OWNER - SUCCESS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parkingName\": \"City Center Parking - Updated\",\n  \"city\": \"Colombo\",\n  \"zone\": \"Zone A\",\n  \"location\": \"Colombo 03\",\n  \"address\": \"123 Galle Road, Colombo 03\",\n  \"latitude\": 6.9147,\n  \"longitude\": 79.8560,\n  \"totalSlots\": 60,\n  \"hourlyRate\": 175.0,\n  \"ownerId\": 1,\n  \"description\": \"Expanded covered parking\",\n  \"contactNumber\": \"0771234567\",\n  \"openingTime\": \"06:00:00\",\n  \"closingTime\": \"23:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.9 Update Parking as DRIVER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parkingName\": \"Hacked Name\",\n  \"city\": \"Colombo\",\n  \"zone\": \"Zone A\",\n  \"location\": \"Colombo 03\",\n  \"address\": \"123 Galle Road\",\n  \"latitude\": 6.9147,\n  \"longitude\": 79.8560,\n  \"totalSlots\": 60,\n  \"hourlyRate\": 175.0,\n  \"ownerId\": 1,\n  \"contactNumber\": \"0771234567\",\n  \"openingTime\": \"06:00:00\",\n  \"closingTime\": \"23:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.10 Get Non-Existent Parking (expect 404)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/999999",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.11 Delete Parking as DRIVER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2.12 Delete Parking as OWNER - SUCCESS (run LAST in this folder)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/parking/{{parking_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "parking",
+                "{{parking_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Vehicle Service",
+      "item": [
+        {
+          "name": "3.1 Register Vehicle as DRIVER - SUCCESS",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('vehicle_id', pm.response.json().data.id);",
+                  "    console.log('vehicle_id set to: ' + pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plateNumber\": \"CAB-{{$randomInt}}\",\n  \"make\": \"Toyota\",\n  \"model\": \"Aqua\",\n  \"color\": \"White\",\n  \"ownerId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.2 Register Vehicle as OWNER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plateNumber\": \"XYZ-{{$randomInt}}\",\n  \"make\": \"Honda\",\n  \"model\": \"Civic\",\n  \"color\": \"Black\",\n  \"ownerId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.3 Get Vehicle By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.4 Get All Vehicles",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.5 Get Vehicles By Owner",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/owner/{{driver_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "owner",
+                "{{driver_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.6 Record Vehicle Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}/entry",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}",
+                "entry"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.7 Record Entry Again (expect 400)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}/entry",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}",
+                "entry"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.8 Record Vehicle Exit",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}/exit",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}",
+                "exit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.9 Update Vehicle - Owned by Self - SUCCESS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Toyota\",\n  \"model\": \"Aqua Hybrid\",\n  \"color\": \"Pearl White\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3.10 Delete Vehicle - Owned by Self - SUCCESS (run LAST in this folder)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/vehicles/{{vehicle_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicle_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Payment Service",
+      "item": [
+        {
+          "name": "4.1 Process Payment as DRIVER - SUCCESS (even last digit)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const data = pm.response.json().data;",
+                  "    pm.collectionVariables.set('payment_id_success', data.id);",
+                  "    pm.collectionVariables.set('receipt_number', data.receiptNumber);",
+                  "    console.log('payment_id_success set to: ' + data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"parkingId\": 1,\n  \"vehicleId\": 1,\n  \"amount\": 500.0,\n  \"cardHolderName\": \"Driver Test\",\n  \"cardNumber\": \"4111111111111112\",\n  \"expiryDate\": \"12/27\",\n  \"cvv\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/payments",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.2 Process Payment - FAILED (odd last digit)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('payment_id_failed', pm.response.json().data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"parkingId\": 1,\n  \"vehicleId\": 1,\n  \"amount\": 150.0,\n  \"cardHolderName\": \"Driver Test\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiryDate\": \"06/27\",\n  \"cvv\": \"456\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/payments",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.3 Process Payment as OWNER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 1,\n  \"parkingId\": 1,\n  \"vehicleId\": 1,\n  \"amount\": 100.0,\n  \"cardHolderName\": \"Owner Test\",\n  \"cardNumber\": \"4111111111111112\",\n  \"expiryDate\": \"12/27\",\n  \"cvv\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{gateway_url}}/api/payments",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.4 Get Own Payment as DRIVER - SUCCESS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/payments/{{payment_id_success}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "{{payment_id_success}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.5 Get Own Payments List as DRIVER",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/payments/user/{{driver_id}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "user",
+                "{{driver_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.6 Get Receipt - SUCCESS payment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/payments/receipt/{{receipt_number}}",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments",
+                "receipt",
+                "{{receipt_number}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.7 Get All Payments as OWNER - SUCCESS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{owner_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/payments",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4.8 Get All Payments as DRIVER (expect 403)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{driver_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{gateway_url}}/api/payments",
+              "host": [
+                "{{gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "driver_token",
+      "value": ""
+    },
+    {
+      "key": "owner_token",
+      "value": ""
+    },
+    {
+      "key": "driver_id",
+      "value": ""
+    },
+    {
+      "key": "owner_id",
+      "value": ""
+    },
+    {
+      "key": "parking_id",
+      "value": ""
+    },
+    {
+      "key": "vehicle_id",
+      "value": ""
+    },
+    {
+      "key": "payment_id_success",
+      "value": ""
+    },
+    {
+      "key": "payment_id_failed",
+      "value": ""
+    },
+    {
+      "key": "receipt_number",
+      "value": ""
+    }
+  ]
+}
